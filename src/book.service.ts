@@ -14,7 +14,7 @@ export class BookService implements OnModuleInit {
 
   async onModuleInit() {
     this.logger.log('Loading books from file and API');
-    await Promise.all([this.loadBooksFromFile(), this.loadBooksFromApi()]);
+    await Promise.all([this.loadBooksFromFile(), this.loadBooksFromFile1()]);
     this.logger.log(`${this.storage.size} books loaded`);
   }
 
@@ -45,7 +45,33 @@ export class BookService implements OnModuleInit {
     books.forEach((book) => this.addBook(book));
   }
 
-  private async loadBooksFromApi() {}
+  private async loadBooksFromFile1() {
+    const data = await readFile('src/dataset1.json', 'utf8');
+    const jsonData = JSON.parse(data.toString());
+  
+    // Vérification que la structure contient une liste de services
+    if (!Array.isArray(jsonData.service)) {
+      throw new Error('Invalid dataset format: "service" property is missing or not an array.');
+    }
+  
+    // Mapping des données vers l'interface Book
+    const books = jsonData.service.map((item) => ({
+      name: item.nom || "Unknown", // Nom du service
+      commune: item.adresse?.[0]?.nom_commune || "Unknown", // Nom de la commune
+      postalCode: item.adresse?.[0]?.code_postal || "Unknown", // Code postal
+      latitude: item.adresse?.[0]?.latitude || "Unknown", // Latitude
+      longitude: item.adresse?.[0]?.longitude || "Unknown", // Longitude
+      dayStart: item.plage_ouverture?.[0]?.nom_jour_debut || "Unknown", // Jour de début
+      dayEnd: item.plage_ouverture?.[0]?.nom_jour_fin || "Unknown", // Jour de fin
+      startTime: item.plage_ouverture?.[0]?.valeur_heure_debut_1 || "Unknown", // Heure d'ouverture
+      endTime: item.plage_ouverture?.[0]?.valeur_heure_fin_1 || "Unknown", // Heure de fermeture
+      id: item.id || "Unknown", // Identifiant unique
+    }));
+  
+    // Ajout des books au stockage
+    books.forEach((book) => this.addBook(book));
+  }
+
   
   addBook(book: Book) {
     this.storage.set(book.id, book);
