@@ -1,0 +1,24 @@
+meta {
+  name: Create book
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url}}/books
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "isbn": "978-2081510436",
+      "title": "Candide",
+      "author": "Voltaire",
+      "date": "1759"
+  }
+}

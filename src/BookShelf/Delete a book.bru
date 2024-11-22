@@ -1,0 +1,15 @@
+meta {
+  name: Delete a book
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{url}}/books/Candide
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}

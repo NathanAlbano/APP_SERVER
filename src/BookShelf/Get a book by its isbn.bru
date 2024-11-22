@@ -1,0 +1,15 @@
+meta {
+  name: Get a book by its isbn
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{url}}/books/Candide
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}

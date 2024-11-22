@@ -1,0 +1,19 @@
+meta {
+  name: Get all books of an author
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/books?author=Voltaire
+  body: json
+  auth: none
+}
+
+params:query {
+  author: Voltaire
+}
+
+headers {
+  Content-Type: application/json
+}
