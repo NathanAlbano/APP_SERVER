@@ -22,20 +22,20 @@ export class BookController {
   }
 
   @Get()
-  getBooks(@Query('author') author: string): Book[] {
+  getBooks(@Query('Commune') author: string): Book[] {
     if (author) {
       return this.bookService.getBooksOf(author);
     }
     return this.bookService.getAllBooks();
   }
 
-  @Get(':isbn')
-  getBook(@Param('isbn') id: string): Book {
+  @Get(':id')
+  getBook(@Param('id') id: string): Book {
     return this.bookService.getBook(id);
   }
 
-  @Delete(':isbn')
-  deleteBook(@Param('isbn') id: string): void {
+  @Delete(':id')
+  deleteBook(@Param('id') id: string): void {
     this.bookService.remove(id);
   }
 
