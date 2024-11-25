@@ -13,6 +13,7 @@ import { BookService } from './book.service';
 
 @Controller('/books')
 export class BookController {
+  private favoriteBooks: Book[] = [];
   constructor(private readonly bookService: BookService) {}
 
   @Post()
@@ -29,6 +30,12 @@ export class BookController {
     return this.bookService.getAllBooks();
   }
 
+    // Voir la liste des favoris
+    @Get('favoris')
+    getFavoriteBooks(): Book[] {
+      return this.favoriteBooks;
+    }
+
   @Get(':id')
   getBook(@Param('id') id: string): Book {
     return this.bookService.getBook(id);
@@ -44,4 +51,34 @@ export class BookController {
   searchBooks(@Body() { term }: { term: string }): Book[] {
     return this.bookService.search(term);
   }
+
+      // *** Gestion des livres favoris ***
+
+
+
+    // Ajouter un livre dans les favoris
+    @Post('favoris')
+    @HttpCode(201)
+    addFavoriteBook(@Body('id') id: string): string {
+      const book = this.bookService.getBook(id);
+      if (!book) {
+        return `Livre avec l'ID ${id} introuvable.`;
+      }
+      if (this.favoriteBooks.some(favBook => favBook.id === id)) {
+        return `Livre avec l'ID ${id} est déjà dans les favoris.`;
+      }
+      this.favoriteBooks.push(book);
+      return `Livre avec l'ID ${id} ajouté aux favoris.`;
+    }
+  
+    // Supprimer un livre des favoris
+    @Delete('favoris/:id')
+    removeFavoriteBook(@Param('id') id: string): string {
+      const index = this.favoriteBooks.findIndex(favBook => favBook.id === id);
+      if (index === -1) {
+        return `Livre avec l'ID ${id} n'est pas dans les favoris.`;
+      }
+      this.favoriteBooks.splice(index, 1);
+      return `Livre avec l'ID ${id} supprimé des favoris.`;
+    }
 }
