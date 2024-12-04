@@ -1,14 +1,13 @@
-
-
 export interface Book {
-  name: string; // Nom du service
+  name: string; // Nom français de la plante
   commune: string; // Nom de la commune
-  postalCode: string; // Code postal
+  date: string; // date du dernier rélevé
   latitude: string; // Latitude
   longitude: string; // Longitude
-  dayStart: string; // Jour de début (ex. "Mardi")
-  dayEnd: string; // Jour de fin (ex. "Vendredi")
-  startTime: string; // Heure d'ouverture (ex. "09:00:00")
-  endTime: string; // Heure de fermeture (ex. "12:00:00")
-  id: string;
+  envergure: string; // Envergure de l'arbre
+  circonference: string; // Circonférence de l'arbre
+  hauteur: string; // Hauteur de l'arbre
+  id: string; // id
+  est_favori: string; // "oui" ou "non"
+  photoUrl: string // photo
 }

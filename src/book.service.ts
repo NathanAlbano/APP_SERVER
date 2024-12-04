@@ -14,64 +14,38 @@ export class BookService implements OnModuleInit {
 
   async onModuleInit() {
     this.logger.log('Loading books from file and API');
-    await Promise.all([this.loadBooksFromFile(), this.loadBooksFromFile1()]);
+    await Promise.all([this.loadBooksFromFile(), this.loadBooksFromApi()]);
     this.logger.log(`${this.storage.size} books loaded`);
   }
 
-  private async loadBooksFromFile() {
-    const data = await readFile('src/dataset.json', 'utf8');
-    const jsonData = JSON.parse(data.toString());
+  private async loadBooksFromFile() {}
   
-    // Vérification que la structure contient une liste de services
-    if (!Array.isArray(jsonData.service)) {
-      throw new Error('Invalid dataset format: "service" property is missing or not an array.');
-    }
-  
-    // Mapping des données vers l'interface Book
-    const books = jsonData.service.map((item) => ({
-      name: item.nom || "Unknown", // Nom du service
-      commune: item.adresse?.[0]?.nom_commune || "Unknown", // Nom de la commune
-      postalCode: item.adresse?.[0]?.code_postal || "Unknown", // Code postal
-      latitude: item.adresse?.[0]?.latitude || "Unknown", // Latitude
-      longitude: item.adresse?.[0]?.longitude || "Unknown", // Longitude
-      dayStart: item.plage_ouverture?.[0]?.nom_jour_debut || "Unknown", // Jour de début
-      dayEnd: item.plage_ouverture?.[0]?.nom_jour_fin || "Unknown", // Jour de fin
-      startTime: item.plage_ouverture?.[0]?.valeur_heure_debut_1 || "Unknown", // Heure d'ouverture
-      endTime: item.plage_ouverture?.[0]?.valeur_heure_fin_1 || "Unknown", // Heure de fermeture
-      id: item.id || "Unknown", // Identifiant unique
-    }));
-  
-    // Ajout des books au stockage
-    books.forEach((book) => this.addBook(book));
-  }
 
-  private async loadBooksFromFile1() {
-    const data = await readFile('src/dataset1.json', 'utf8');
-    const jsonData = JSON.parse(data.toString());
-  
-    // Vérification que la structure contient une liste de services
-    if (!Array.isArray(jsonData.service)) {
-      throw new Error('Invalid dataset format: "service" property is missing or not an array.');
-    }
-  
-    // Mapping des données vers l'interface Book
-    const books = jsonData.service.map((item) => ({
-      name: item.nom || "Unknown", // Nom du service
-      commune: item.adresse?.[0]?.nom_commune || "Unknown", // Nom de la commune
-      postalCode: item.adresse?.[0]?.code_postal || "Unknown", // Code postal
-      latitude: item.adresse?.[0]?.latitude || "Unknown", // Latitude
-      longitude: item.adresse?.[0]?.longitude || "Unknown", // Longitude
-      dayStart: item.plage_ouverture?.[0]?.nom_jour_debut || "Unknown", // Jour de début
-      dayEnd: item.plage_ouverture?.[0]?.nom_jour_fin || "Unknown", // Jour de fin
-      startTime: item.plage_ouverture?.[0]?.valeur_heure_debut_1 || "Unknown", // Heure d'ouverture
-      endTime: item.plage_ouverture?.[0]?.valeur_heure_fin_1 || "Unknown", // Heure de fermeture
-      id: item.id || "Unknown", // Identifiant unique
-    }));
-  
-    // Ajout des books au stockage
-    books.forEach((book) => this.addBook(book));
+  private async loadBooksFromApi() {
+    await firstValueFrom(
+      this.httpService
+        .get<APIBook[]>('https://data.opendatasoft.com/api/explore/v2.1/catalog/datasets/fr-229200506-arbres-remarquables@hauts-de-seine/exports/json?lang=fr&timezone=Europe%2FBerlin')
+        .pipe(
+          map((response) => response.data),
+          map((apiBooks) =>
+            apiBooks.map((apiBook) => ({
+              name: apiBook.nom_francais || "Nom inconnu",
+              commune: apiBook.commune || "Commune inconnue",
+              date: apiBook.date_releve || "Date inconnue",
+              latitude: apiBook.geo_point_2d.lat.toString(),
+              longitude: apiBook.geo_point_2d.lon.toString(),
+              envergure: apiBook.envergure?.toString() || "0",
+              circonference: apiBook.circonference?.toString() || "0",
+              hauteur: apiBook.hauteur?.toString() || "0",
+              id: apiBook.matricule || "ID inconnu",
+              est_favori: "non",
+              photoUrl: apiBook.photo?.url || null,
+            })),
+          ),
+          tap((books) => books.forEach((book) => this.addBook(book))),
+        ),
+    );
   }
-
   
   addBook(book: Book) {
     this.storage.set(book.id, book);
