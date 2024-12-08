@@ -11,3 +11,4 @@ export interface Book {
   est_favori: string; // "oui" ou "non"
   photoUrl: string // photo
 }
+

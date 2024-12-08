@@ -67,6 +67,7 @@ export class BookController {
       if (this.favoriteBooks.some(favBook => favBook.id === id)) {
         return `Livre avec l'ID ${id} est déjà dans les favoris.`;
       }
+      book.est_favori = "oui"
       this.favoriteBooks.push(book);
       return `Livre avec l'ID ${id} ajouté aux favoris.`;
     }
@@ -78,6 +79,8 @@ export class BookController {
       if (index === -1) {
         return `Livre avec l'ID ${id} n'est pas dans les favoris.`;
       }
+      const book = this.favoriteBooks[index];
+      book.est_favori = "non";
       this.favoriteBooks.splice(index, 1);
       return `Livre avec l'ID ${id} supprimé des favoris.`;
     }
