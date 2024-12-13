@@ -1,4 +1,4 @@
-export interface APIBook {
+export interface APIArbre {
   commune: string;
   domaine: string;
   code_insee: string;

@@ -1,4 +1,4 @@
-export interface Book {
+export interface Arbre {
   name: string; // Nom français de la plante
   commune: string; // Nom de la commune
   date: string; // date du dernier rélevé
